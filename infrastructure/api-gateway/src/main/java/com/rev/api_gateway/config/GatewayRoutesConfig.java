@@ -20,6 +20,11 @@ public class GatewayRoutesConfig {
                                 c.setName("userServiceCircuitBreaker")
                                         .setFallbackUri("forward:/fallback/user")))
                         .uri("lb://USER-SERVICE"))
+                .route("user-service-swagger", r -> r
+                        .path("/user-service/v3/api-docs")
+                        .filters(f -> f.rewritePath("/user-service/(?<segment>.*)", "/${segment}"))
+                        .uri("lb://USER-SERVICE"))
+
 
                 // EMPLOYEE MANAGEMENT SERVICE
                 .route("employee-service", r -> r

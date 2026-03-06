@@ -73,9 +73,8 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 
     private boolean isPublicRoute(String path) {
 
-        return path.startsWith("/auth/")
-                || path.startsWith("/actuator")
-                || path.startsWith("/fallback");
+        return com.rev.api_gateway.config.SecurityConfig
+                .isPublicRoute(path);
     }
 
     private Mono<Void> unauthorized(ServerWebExchange exchange, String message) {

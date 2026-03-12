@@ -11,7 +11,7 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      - ../../init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     networks:
       - revworkforce-network
     healthcheck:
@@ -21,7 +21,9 @@ services:
       retries: 5
 
   config-server:
-    build: ./infrastructure/config-server
+    build:
+      context: ../../
+      dockerfile: devops/docker/config-server.Dockerfile
     container_name: config-server
     ports:
       - "8888:8888"
@@ -34,7 +36,9 @@ services:
       retries: 5
 
   eureka-server:
-    build: ./infrastructure/eureka-server
+    build:
+      context: ../../
+      dockerfile: devops/docker/eureka-server.Dockerfile
     container_name: eureka-server
     ports:
       - "8761:8761"
@@ -50,7 +54,9 @@ services:
       retries: 5
 
   user-service:
-    build: ./services/user-service
+    build:
+      context: ../../
+      dockerfile: devops/docker/user-service.Dockerfile
     container_name: user-service
     ports:
       - "8081:8081"
@@ -68,7 +74,9 @@ services:
       - revworkforce-network
 
   notification-service:
-    build: ./services/notification-service
+    build:
+      context: ../../
+      dockerfile: devops/docker/notification-service.Dockerfile
     container_name: notification-service
     ports:
       - "8085:8085"
@@ -86,7 +94,9 @@ services:
       - revworkforce-network
 
   employee-management-service:
-    build: ./services/employee-management-service
+    build:
+      context: ../../
+      dockerfile: devops/docker/employee-management-service.Dockerfile
     container_name: employee-management-service
     ports:
       - "8084:8084"
@@ -106,7 +116,9 @@ services:
       - revworkforce-network
 
   leave-service:
-    build: ./services/leave-service
+    build:
+      context: ../../
+      dockerfile: devops/docker/leave-service.Dockerfile
     container_name: leave-service
     ports:
       - "8082:8082"
@@ -128,7 +140,9 @@ services:
       - revworkforce-network
 
   performance-service:
-    build: ./services/performance-service
+    build:
+      context: ../../
+      dockerfile: devops/docker/performance-service.Dockerfile
     container_name: performance-service
     ports:
       - "8083:8083"
@@ -150,7 +164,9 @@ services:
       - revworkforce-network
 
   reporting-service:
-    build: ./services/reporting-service
+    build:
+      context: ../../
+      dockerfile: devops/docker/reporting-service.Dockerfile
     container_name: reporting-service
     ports:
       - "8086:8086"
@@ -174,7 +190,9 @@ services:
       - revworkforce-network
 
   api-gateway:
-    build: ./infrastructure/api-gateway
+    build:
+      context: ../../
+      dockerfile: devops/docker/api-gateway.Dockerfile
     container_name: api-gateway
     ports:
       - "8080:8080"
@@ -199,7 +217,9 @@ services:
       - revworkforce-network
 
   revworkforce-ui:
-    build: ./frontend/revworkforce-ui
+    build:
+      context: ../../
+      dockerfile: devops/docker/frontend.Dockerfile
     container_name: revworkforce-ui
     ports:
       - "4200:80"

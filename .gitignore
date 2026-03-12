@@ -68,11 +68,14 @@ logs/
 docker-compose.override.yml
 **/docker/volumes/
 
-# Compiled class files
-*.class
-*.jar
+# Microservices (Internal)
+services/
 *.war
 *.ear
 *.zip
 *.tar.gz
 *.rar
+
+# Compiled class files
+*.class
+*.jar

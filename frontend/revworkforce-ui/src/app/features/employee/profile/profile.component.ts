@@ -26,6 +26,11 @@ export class ProfileComponent implements OnInit {
   successMsg = signal('');
   errorMsg = signal('');
   passwordError = signal('');
+  
+  // Password Visibility
+  showCurrentPassword = signal(false);
+  showNewPassword = signal(false);
+  showConfirmPassword = signal(false);
 
   constructor(
     private employeeService: EmployeeService,
@@ -65,6 +70,16 @@ export class ProfileComponent implements OnInit {
     if (!this.isEditing()) {
       this.editData = {...this.profile()};
     }
+  }
+
+  togglePasswordSection() {
+    this.showPasswordSection.update(v => !v);
+    // Reset visibility when toggling section
+    this.showCurrentPassword.set(false);
+    this.showNewPassword.set(false);
+    this.showConfirmPassword.set(false);
+    this.passwordData = { currentPassword: '', newPassword: '', confirmPassword: '' };
+    this.passwordError.set('');
   }
 
   saveProfile() {
@@ -113,6 +128,11 @@ export class ProfileComponent implements OnInit {
       return;
     }
 
+    if (this.passwordData.currentPassword === this.passwordData.newPassword) {
+      this.passwordError.set('New password cannot be the same as current password');
+      return;
+    }
+
     if (this.passwordData.newPassword.length < 6) {
       this.passwordError.set('Password must be at least 6 characters');
       return;
@@ -126,10 +146,14 @@ export class ProfileComponent implements OnInit {
         this.toast.success('Password changed successfully!');
         this.showPasswordSection.set(false);
         this.passwordData = { currentPassword: '', newPassword: '', confirmPassword: '' };
+        this.showCurrentPassword.set(false);
+        this.showNewPassword.set(false);
+        this.showConfirmPassword.set(false);
       },
       error: (err) => {
         this.isChangingPassword.set(false);
-        this.toast.error(err.error?.message || 'Failed to change password');
+        const msg = err.error?.message || 'Failed to change password';
+        this.passwordError.set(msg);  // show inline in the form
       }
     });
   }

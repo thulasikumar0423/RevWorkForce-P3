@@ -52,7 +52,7 @@
               <div class="card-panel" style="margin-top:1rem;">
                 <div class="card-panel-header">
                   <div class="card-panel-title">Change Password</div>
-                  <button class="btn-sm-action btn-reject" (click)="showPasswordSection.set(false)"></button>
+                  <button class="btn-sm-action btn-reject" (click)="togglePasswordSection()"></button>
                 </div>
 
                 @if (passwordError()) {
@@ -64,18 +64,36 @@
                 <form #passwordForm="ngForm" (ngSubmit)="changePassword()" style="padding:1rem;">
                   <div class="mb-3">
                     <label style="display:block;font-weight:600;margin-bottom:0.5rem;font-size:0.85rem;">Current Password</label>
-                    <input type="password" [(ngModel)]="passwordData.currentPassword" name="currentPassword" required
-                      style="width:100%;border:1px solid var(--border);border-radius:8px;padding:0.65rem;font-size:0.85rem;outline:none;" />
+                    <div style="position:relative;">
+                      <input [type]="showCurrentPassword() ? 'text' : 'password'" [(ngModel)]="passwordData.currentPassword" name="currentPassword" required
+                        style="width:100%;border:1px solid var(--border);border-radius:8px;padding:0.65rem;padding-right:2.5rem;font-size:0.85rem;outline:none;" />
+                      <button type="button" (click)="showCurrentPassword.set(!showCurrentPassword())" 
+                        style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;padding:0;">
+                        <i [class]="showCurrentPassword() ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                      </button>
+                    </div>
                   </div>
                   <div class="mb-3">
                     <label style="display:block;font-weight:600;margin-bottom:0.5rem;font-size:0.85rem;">New Password</label>
-                    <input type="password" [(ngModel)]="passwordData.newPassword" name="newPassword" required
-                      style="width:100%;border:1px solid var(--border);border-radius:8px;padding:0.65rem;font-size:0.85rem;outline:none;" />
+                    <div style="position:relative;">
+                      <input [type]="showNewPassword() ? 'text' : 'password'" [(ngModel)]="passwordData.newPassword" name="newPassword" required
+                        style="width:100%;border:1px solid var(--border);border-radius:8px;padding:0.65rem;padding-right:2.5rem;font-size:0.85rem;outline:none;" />
+                      <button type="button" (click)="showNewPassword.set(!showNewPassword())" 
+                        style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;padding:0;">
+                        <i [class]="showNewPassword() ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                      </button>
+                    </div>
                   </div>
                   <div class="mb-3">
                     <label style="display:block;font-weight:600;margin-bottom:0.5rem;font-size:0.85rem;">Confirm New Password</label>
-                    <input type="password" [(ngModel)]="passwordData.confirmPassword" name="confirmPassword" required
-                      style="width:100%;border:1px solid var(--border);border-radius:8px;padding:0.65rem;font-size:0.85rem;outline:none;" />
+                    <div style="position:relative;">
+                      <input [type]="showConfirmPassword() ? 'text' : 'password'" [(ngModel)]="passwordData.confirmPassword" name="confirmPassword" required
+                        style="width:100%;border:1px solid var(--border);border-radius:8px;padding:0.65rem;padding-right:2.5rem;font-size:0.85rem;outline:none;" />
+                      <button type="button" (click)="showConfirmPassword.set(!showConfirmPassword())" 
+                        style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;padding:0;">
+                        <i [class]="showConfirmPassword() ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                      </button>
+                    </div>
                   </div>
                   <button type="submit" class="btn-primary-sm" style="width:100%;" [disabled]="isChangingPassword()">
                     @if (isChangingPassword()) {

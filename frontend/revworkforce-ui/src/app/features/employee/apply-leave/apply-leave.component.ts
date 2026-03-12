@@ -27,6 +27,9 @@ export class ApplyLeaveComponent implements OnInit {
     reason: ''
   };
 
+  // Today in YYYY-MM-DD format for the min attribute
+  todayStr = new Date().toISOString().split('T')[0];
+
   constructor(
     private leaveService: LeaveService,
     private toast: ToastService,
@@ -50,7 +53,23 @@ export class ApplyLeaveComponent implements OnInit {
 
   onSubmit() {
     if (!this.leaveData.leaveTypeId || !this.leaveData.fromDate || !this.leaveData.toDate || !this.leaveData.reason) {
-      this.toast.error('Please fill all fields');
+      this.errorMsg.set('Please fill all fields');
+      return;
+    }
+
+    // Frontend date guards (secondary to backend validation)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const fromDate = new Date(this.leaveData.fromDate);
+    const toDate = new Date(this.leaveData.toDate);
+
+    if (fromDate < today) {
+      this.errorMsg.set('Start date cannot be in the past. Please select today or a future date.');
+      return;
+    }
+
+    if (toDate < fromDate) {
+      this.errorMsg.set('End date cannot be before the start date.');
       return;
     }
 
@@ -79,7 +98,7 @@ export class ApplyLeaveComponent implements OnInit {
       error: (err) => {
         console.error('Error applying leave:', err);
         this.isLoading.set(false);
-        this.toast.error(err.error?.message || 'Failed to apply leave');
+        this.errorMsg.set(err.error?.message || 'Failed to apply leave. Please try again.');
       }
     });
   }

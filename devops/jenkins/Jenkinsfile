@@ -80,10 +80,10 @@ pipeline {
                     script {
                         if (isUnix()) {
                             sh "npm install"
-                            sh "npm run build --configuration=production"
+                            sh "export NODE_OPTIONS=--max-old-space-size=4096 && npm run build --configuration=production"
                         } else {
                             bat "npm install"
-                            bat "npm run build --configuration=production"
+                            bat "set NODE_OPTIONS=--max-old-space-size=4096 && npm run build --configuration=production"
                         }
                     }
                 }

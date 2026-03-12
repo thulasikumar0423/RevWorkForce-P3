@@ -43,6 +43,36 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    def services = [
+                        'infrastructure/api-gateway',
+                        'services/user-service',
+                        'services/notification-service',
+                        'services/employee-management-service',
+                        'services/leave-service',
+                        'services/performance-service',
+                        'services/reporting-service'
+                    ]
+                    
+                    for (service in services) {
+                        dir(service) {
+                            echo "Running SonarQube analysis for ${service}..."
+                            // Assuming Sonar scanner is configured in Jenkins or using Maven plugin
+                            // We need to provide the Sonar host URL
+                            // Jenkins is in a container, so we use the sonarqube container name
+                            if (isUnix()) {
+                                sh "mvn sonar:sonar -Dsonar.host.url=http://sonarqube:9000 -Dsonar.token=squ_404cf10b2035070d22d42ef43ae825b1a7542056"
+                            } else {
+                                bat "mvn sonar:sonar -Dsonar.host.url=http://sonarqube:9000 -Dsonar.token=squ_404cf10b2035070d22d42ef43ae825b1a7542056"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         stage('Build Frontend') {
             steps {
                 dir('frontend/revworkforce-ui') {
@@ -54,6 +84,22 @@ pipeline {
                         } else {
                             bat "npm install"
                             bat "npm run build --configuration=production"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Frontend Sonar Scan') {
+            steps {
+                dir('frontend/revworkforce-ui') {
+                    echo "Running SonarQube scan for Frontend..."
+                    script {
+                        // Assuming sonar-scanner is available in the environment
+                        if (isUnix()) {
+                            sh "npx sonar-scanner -Dsonar.projectKey=revworkforce-frontend -Dsonar.sources=src -Dsonar.host.url=http://sonarqube:9000 -Dsonar.token=squ_404cf10b2035070d22d42ef43ae825b1a7542056"
+                        } else {
+                            bat "npx sonar-scanner -Dsonar.projectKey=revworkforce-frontend -Dsonar.sources=src -Dsonar.host.url=http://sonarqube:9000 -Dsonar.token=squ_404cf10b2035070d22d42ef43ae825b1a7542056"
                         }
                     }
                 }

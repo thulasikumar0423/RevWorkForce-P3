@@ -69,7 +69,15 @@ docker-compose.override.yml
 **/docker/volumes/
 
 # Microservices (Internal)
-services/
+# To push a service, simply uncomment its name below:
+services/*
+!services/.gitkeep
+# !services/user-service/
+# !services/employee-management-service/
+# !services/leave-service/
+# !services/performance-service/
+# !services/notification-service/
+# !services/reporting-service/
 *.war
 *.ear
 *.zip

@@ -112,9 +112,9 @@ pipeline {
                     echo "Building Docker Images..."
                     // Building using centralized docker-compose
                     if (isUnix()) {
-                        sh "docker-compose -f devops/docker/docker-compose.yml build"
+                        sh "docker-compose -f devops/docker/docker-compose.yml build mysql config-server eureka-server user-service notification-service employee-management-service leave-service performance-service reporting-service api-gateway revworkforce-ui"
                     } else {
-                        bat "docker-compose -f devops/docker/docker-compose.yml build"
+                        bat "docker-compose -f devops/docker/docker-compose.yml build mysql config-server eureka-server user-service notification-service employee-management-service leave-service performance-service reporting-service api-gateway revworkforce-ui"
                     }
                 }
             }
@@ -125,9 +125,9 @@ pipeline {
                 script {
                     echo "Starting Application in Docker..."
                     if (isUnix()) {
-                        sh "docker-compose -f devops/docker/docker-compose.yml up -d"
+                        sh "docker-compose -f devops/docker/docker-compose.yml up -d mysql config-server eureka-server user-service notification-service employee-management-service leave-service performance-service reporting-service api-gateway revworkforce-ui"
                     } else {
-                        bat "docker-compose -f devops/docker/docker-compose.yml up -d"
+                        bat "docker-compose -f devops/docker/docker-compose.yml up -d mysql config-server eureka-server user-service notification-service employee-management-service leave-service performance-service reporting-service api-gateway revworkforce-ui"
                     }
                     echo "Application is up at http://localhost:4200"
                 }

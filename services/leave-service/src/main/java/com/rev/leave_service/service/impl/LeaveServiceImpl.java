@@ -52,7 +52,7 @@ public class LeaveServiceImpl implements LeaveService {
     }
 
     @Override
-    public Leave applyLeave(Long userId, Long leaveTypeId, LocalDate startDate, LocalDate endDate, String reason) {
+    public synchronized Leave applyLeave(Long userId, Long leaveTypeId, LocalDate startDate, LocalDate endDate, String reason) {
         if (startDate.isBefore(LocalDate.now())) {
             throw new RuntimeException("Leave start date cannot be in the past.");
         }
@@ -60,9 +60,10 @@ public class LeaveServiceImpl implements LeaveService {
             throw new RuntimeException("End date cannot be before start date.");
         }
 
+        // Robust overlapping check including pending and approved leaves
         List<Leave> overlapping = leaveRepository.findOverlappingLeaves(userId, startDate, endDate);
         if (!overlapping.isEmpty()) {
-            throw new RuntimeException("Overlapping leave application exists.");
+            throw new RuntimeException("Overlapping leave application exists or is already pending for these dates.");
         }
 
         LeaveBalance balance = leaveBalanceRepository.findByUserIdAndLeaveTypeId(userId, leaveTypeId)
@@ -92,15 +93,32 @@ public class LeaveServiceImpl implements LeaveService {
 
     private void notifyStakeholders(Long userId, LocalDate start, LocalDate end) {
         try {
+            String employeeName = "Employee";
+            try {
+                Map<String, Object> user = userServiceClient.getUserById(userId);
+                if (user != null && user.get("name") != null) {
+                    employeeName = user.get("name").toString();
+                } else if (user != null && user.get("firstName") != null) {
+                    employeeName = user.get("firstName").toString();
+                    if (user.get("lastName") != null) {
+                        employeeName += " " + user.get("lastName").toString();
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("Failed to fetch employee name for notification: " + e.getMessage());
+            }
+
             Map<String, Object> manager = userServiceClient.getManager(userId);
             if (manager != null && manager.containsKey("id")) {
                 Map<String, Object> notification = new HashMap<>();
                 notification.put("userId", Long.valueOf(manager.get("id").toString()));
-                notification.put("message", "New leave request for " + start + " to " + end);
+                notification.put("message", "New leave request from " + employeeName + " for " + start + " to " + end);
                 notification.put("type", "LEAVE_APPLIED");
                 notificationServiceClient.createNotification(notification);
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            System.err.println("Failed to notify manager: " + e.getMessage());
+        }
     }
 
     @Override
@@ -154,11 +172,18 @@ public class LeaveServiceImpl implements LeaveService {
     @Override
     public List<Leave> getTeamLeaves(Long managerId) {
         List<Map<String, Object>> teamMembers = userServiceClient.getTeamMembers(managerId);
+        if (teamMembers == null || teamMembers.isEmpty()) {
+            return java.util.Collections.emptyList();
+        }
+
         List<Long> memberIds = teamMembers.stream()
                 .map(m -> Long.valueOf(m.get("id").toString()))
+                .filter(id -> id != null)
                 .collect(Collectors.toList());
+
+        // Better performance: filter while streaming rather than getting ALL leaves potentially across the whole company
         return leaveRepository.findAll().stream()
-                .filter(l -> memberIds.contains(l.getUserId()))
+                .filter(l -> l.getUserId() != null && memberIds.contains(l.getUserId()))
                 .collect(Collectors.toList());
     }
 

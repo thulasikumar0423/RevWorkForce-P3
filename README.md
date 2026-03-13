@@ -1,122 +1,149 @@
-# 🚀 RevWorkForce-P3: Enterprise HRMS Microservices Platform
+# 🚀 RevWorkforce - Enterprise Microservices Platform (P3)
 
-RevWorkForce is a modern, scalable Human Resource Management System built on a **Microservices Architecture**. This platform automates workforce management, leave tracking, performance appraisals, and real-time notifications.
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.2-brightgreen)](https://spring.io/projects/spring-boot)
+[![Angular](https://img.shields.io/badge/Angular-18.2-red)](https://angular.io/)
+[![Docker](https://img.shields.io/badge/Docker-Enabled-blue)](https://www.docker.com/)
+[![Jenkins](https://img.shields.io/badge/CI%2FCD-Jenkins-orange)](https://www.jenkins.io/)
+
+RevWorkforce (P3) is a cloud-native, scalable Human Resource Management (HRM) system. It leverages a modern microservices architecture to automate workforce operations, leave tracking, and performance appraisals with high availability and fault tolerance.
 
 ---
 
-## 🏛️ Project Architecture
+## 📖 Table of Contents
+*   [🌟 Overview](#-overview)
+*   [🏛️ Architecture](#-architecture)
+*   [🛠️ Technology Stack](#-technology-stack)
+*   [✨ Key Features](#-key-features)
+*   [🚀 Installation & Quick Start](#-installation--quick-start)
+*   [🔍 Code Quality (SonarQube)](#-code-quality-sonarqube)
+*   [🔄 CI/CD Pipeline (Jenkins)](#-cicd-pipeline-jenkins)
+*   [🩹 Troubleshooting](#-troubleshooting)
 
-The system is divided into **Infrastructure Services** (Core) and **Business Services** (Domain).
+---
 
-### Core Infrastructure
-- **API Gateway (Port 8080):** Central entry point with JWT authentication and routing.
-- **Config Server (Port 8888):** Centralized external configuration repository.
-- **Eureka Server (Port 8761):** Service Discovery and Load Balancing.
+## 🌟 Overview
+RevWorkforce (P3) decomposes the monolithic HRM system into **9 specialized services**. This allows each module (like Leave or Performance) to scale independently, ensuring the platform remains responsive even under heavy corporate load.
 
-### Business Microservices
-- **User Service (8081):** Auth & Profile management.
-- **Leave Service (8082):** Leave applications & Balance tracking.
-- **Performance Service (8083):** Goal setting & Appraisals.
-- **Employee Management (8084):** Org structure & Announcements.
-- **Notification Service (8085):** Real-time system alerts.
-- **Reporting Service (8086):** Analytics & Dashboards.
+## 🏛️ Architecture
+The platform follows a **Distributed Microservices Pattern** managed by a centralized API Gateway and Discovery Server.
+
+| Service Name | Port | Description |
+| :--- | :--- | :--- |
+| **API Gateway** | `8080` | Entry point, JWT Auth, and routing |
+| **Eureka Server** | `8761` | Service discovery and registration |
+| **Config Server** | `8888` | Centralized external configuration |
+| **User Service** | `8081` | Authentication and user profiles |
+| **Leave Service** | `8082` | Leave requests and balance tracking |
+| **Performance Service** | `8083` | Employee goals and appraisals |
+| **Employee Management** | `8084` | Departments and org structure |
+| **Notification Service** | `8085` | Real-time system alerts |
+| **Reporting Service** | `8086` | Analytics and dashboards |
+
+---
+
+## 🛠️ Technology Stack
+
+### Backend
+- **Core:** Spring Boot 3.2.2 / Spring Cloud 2023
+- **Infrastructure:** Netflix Eureka (Discovery), Spring Cloud Gateway, Config Server
+- **Security:** Spring Security + Stateless JWT
+- **Communication:** OpenFeign & REST
+- **Database:** MySQL 8.0
 
 ### Frontend
-- **Angular UI (Port 4200):** Premium, responsive dashboard.
+- **Framework:** Angular 18.2 (Standalone Components)
+- **Styling:** Bootstrap 5.3 & Vanilla CSS
+
+### DevOps
+- **Containerization:** Docker & Docker Compose
+- **Pipeline:** Jenkins (Groovy Scripted Pipeline)
+- **Analysis:** SonarQube Community Edition
 
 ---
 
-## 📋 Prerequisites
+## ✨ Key Features
 
-Ensure you have the following installed:
-- **Java 17+** (JDK)
-- **Node.js 18+** & **Angular CLI**
-- **Docker Desktop** (with 8GB+ RAM allocated)
-- **Maven** (optional, handled by Docker/Jenkins)
+### 👤 Admin Features
+- **Lifecycle Management:** Control departments, designations, and employee records.
+- **Org Controls:** Global holiday configuration and company-wide announcements.
+- **Analytics:** Comprehensive reporting on leave patterns and audit logs.
+
+### 👔 Manager Features
+- **Team Presence:** Real-time visibility into team leave schedules.
+- **Performance:** Conduct reviews and set development goals for reports.
+
+### 💼 Employee Features
+- **Self-Service:** Submit leave applications and track goal progress.
+- **Engagement:** Real-time notifications for approval status and updates.
 
 ---
 
-## 🛠️ Local Development Setup
+## 🚀 Installation & Quick Start
 
-### 1. Clone the Repository
+### 1. Prerequisites
+- **Java 17+**
+- **Node.js 18+**
+- **Docker Desktop** (8GB RAM / 64GB Disk recommended)
+
+### 2. Clone the Repository
 ```bash
 git clone https://github.com/thulasikumar0423/RevWorkForce-P3.git
 cd RevWorkForce-P3
 ```
 
-### 2. Configuration & Properties
-The centralized properties are managed by the Config Server. You can find the property templates in the team repository:
-- **Source Repository:** `https://github.com/RevWorkForceTeam/RevWorkForce-P3.git`
-- Ensure your `mysql` and `jwt` secrets are updated in the `application.yml` files within the config repo.
+### 3. Configuration
+The application pulls properties from the [Team Config Repository](https://github.com/RevWorkForceTeam/RevWorkForce-Config.git). Ensure your `mysql` and `jwt` secrets are updated in the `application.yml` via the Config Server.
 
-### 3. Running with Docker Compose (Recommended)
-This is the fastest way to start the entire ecosystem.
-
+### 4. Running with Docker (Best Way)
 ```bash
-# Build and Start all services
+# Start all 10 services plus Infrastructure (Jenkins, Sonar, DB)
 docker-compose -f devops/docker/docker-compose.yml up -d --build
 ```
+*The UI will be available at: [http://localhost:4200](http://localhost:4200)*
 
 ---
 
 ## 🔍 Code Quality (SonarQube)
+We use SonarQube to maintain strict security and clean code standards.
 
-We use SonarQube for static analysis and security scanning.
-
-1.  **Start SonarQube:**
+1.  **Start Sonar:** `docker start sonarqube` (Available at port `9000`)
+2.  **Scan Backend:**
     ```bash
-    docker run -d --name sonarqube -p 9000:9000 sonarqube:community
+    mvn clean verify sonar:sonar -Dsonar.projectKey=revworkforce-backend
     ```
-2.  **Run Scan (Backend):**
-    ```bash
-    mvn clean verify sonar:sonar -Dsonar.projectKey=revworkforce-backend -Dsonar.host.url=http://localhost:9000
-    ```
-3.  **Run Scan (Frontend):**
+3.  **Scan Frontend:**
     ```bash
     cd frontend/revworkforce-ui
-    npx sonar-scanner -Dsonar.projectKey=revworkforce-frontend -Dsonar.host.url=http://localhost:9000
+    npx sonar-scanner -Dsonar.projectKey=revworkforce-frontend
     ```
 
 ---
 
-## 🚀 CI/CD Pipeline (Jenkins)
-
-The project includes a fully robust `Jenkinsfile` for automated deployments.
-
-### Setup Jenkins
-1.  **Start Jenkins:**
-    ```bash
-    docker-compose -f devops/docker/docker-compose.yml up -d jenkins
-    ```
-2.  **Access:** [http://localhost:8088](http://localhost:8088)
-3.  **Setup Credentials:** Add `docker-hub-credentials` to Jenkins for image pushing.
-
-### Pipeline Stages
-- **Checkout:** Pulls latest code from GitHub.
-- **Build Backend:** Compiles Java services using Maven.
-- **Build Frontend:** Compiles Angular app (Optimized for 4GB RAM).
-- **Sonar Analysis:** Runs security scans for both Frontend and Backend.
-- **Docker Build:** Creates production images for 10 services.
-- **Push to Hub:** Pushes images to `thulasikumarp/revworkforce-*`.
+## 🔄 CI/CD Pipeline (Jenkins)
+The integrated **Jenkinsfile** automates the entire lifecycle:
+- **Build:** Parallel Maven builds (Backend) & Angular Prod build (Frontend).
+- **Quality:** Automated Sonar scans with memory-optimized JS runners.
+- **Containerize:** Docker images tagged as `thulasikumarp/revworkforce-*`.
+- **Deploy:** Automatic push to Docker Hub.
 
 ---
 
-## 🐳 Docker Hub Repositories
-Images are pushed to Docker Hub under the user: **`thulasikumarp`**.
-- `docker pull thulasikumarp/revworkforce-ui:latest`
-- `docker pull thulasikumarp/revworkforce-user-service:latest`
-- *(And 8 more services...)*
+## 🔑 Default Credentials
+| System | URL | Username | Password |
+| :--- | :--- | :--- | :--- |
+| **Application** | `localhost:4200` | `admin@gmail.com` | `admin123` |
+| **Jenkins** | `localhost:8088` | `thulasikumarp` | *(Your Setup Pass)* |
+| **SonarQube** | `localhost:9000` | `admin` | `admin` |
 
 ---
 
 ## 🩹 Troubleshooting
-
-- **Memory Issues (`Killed` error):** Ensure Docker Desktop has at least **8GB RAM** and **64GB Disk Space** allocated.
-- **Port Conflicts:** Ensure ports 8080, 4200, 8888, and 9000 are not used by other apps.
-- **Docker Socket Permissions:** If Jenkins can't build images, run:
+- **`Killed` Error:** Node/Java ran out of RAM. Ensure Docker Desktop has **8GB RAM** allocated.
+- **Port Conflict:** If a service fails to start, check if port `8080` (Gateway) or `4200` (UI) is already in use.
+- **Docker Permission:** If Jenkins cannot build, run:
   `docker exec -u root jenkins chmod 666 /var/run/docker.sock`
 
 ---
 
-## 🤝 Contribution
-For team policies and property update requests, please refer to the [Team Organization Page](https://github.com/RevWorkForceTeam).
+**⭐ If you find this project useful, give it a star!**
+Maintainer: [Thulasi Kumar Pachikayala](https://github.com/thulasikumar0423)

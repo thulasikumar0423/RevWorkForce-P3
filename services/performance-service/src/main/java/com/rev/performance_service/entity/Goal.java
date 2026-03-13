@@ -23,6 +23,7 @@ public class Goal extends BaseEntity {
     private Long userId;
 
     private String title;
+    @Column(length = 5000)
     private String description;
     @Column(name = "deadline")
     private java.time.LocalDate deadline;
@@ -36,5 +37,6 @@ public class Goal extends BaseEntity {
     @Column(name = "priority")
     private GoalPriority priority = GoalPriority.MEDIUM;
 
+    @Column(length = 5000)
     private String managerComment;
 }

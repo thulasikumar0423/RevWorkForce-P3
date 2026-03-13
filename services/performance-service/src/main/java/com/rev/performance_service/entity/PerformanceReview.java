@@ -25,16 +25,27 @@ public class PerformanceReview extends BaseEntity {
     @Column(name = "review_year", nullable = false)
     private int reviewYear;
 
+    @com.fasterxml.jackson.annotation.JsonProperty("year")
+    public int getYear() {
+        return (reviewYear > 0) ? reviewYear : java.time.LocalDate.now().getYear();
+    }
+
+    @Column(length = 5000)
     private String deliverables;
+
     @com.fasterxml.jackson.annotation.JsonProperty("areasOfAccomplishment")
+    @Column(length = 5000)
     private String accomplishments;
+
     @com.fasterxml.jackson.annotation.JsonProperty("areasOfImprovement")
+    @Column(length = 5000)
     private String improvements;
 
     private int selfRating;
     private int managerRating;
 
     @com.fasterxml.jackson.annotation.JsonProperty("feedback")
+    @Column(length = 5000)
     private String managerFeedback;
 
     @Enumerated(EnumType.STRING)

@@ -92,6 +92,13 @@
                         style="height:100%;transition:width 0.3s;"></div>
                     </div>
                   </div>
+
+                  @if (goal.managerComment) {
+                    <div style="background:rgba(var(--accent-rgb), 0.05); padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid var(--accent);">
+                      <div style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.25rem;">Manager Comments</div>
+                      <div style="font-size: 0.85rem; color: var(--text-main);">{{ goal.managerComment }}</div>
+                    </div>
+                  }
                   <div style="display:flex;gap:1.5rem;align-items:center;">
                     <div style="flex:1; display:flex; align-items:center;">
                         <input type="range" min="0" max="100" [value]="goal.progress"

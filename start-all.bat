@@ -1,9 +1,9 @@
 @echo off
 setlocal enabledelayedexpansion
 
-echo ========================================
+
 echo Starting RevWorkForce complete setup
-echo ========================================
+
 echo.
 
 REM Check if MySQL is running

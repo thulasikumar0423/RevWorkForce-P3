@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         DOCKER_IMAGE_TAG = "latest"
-        // Add your Docker Hub/Registry credentials ID here if pushing
-        // DOCKER_REGO_CREDS = 'docker-hub-credentials'
+        DOCKER_HUB_USER = "thulasikumarp"
+        DOCKER_REGO_CREDS = 'docker-hub-credentials'
     }
 
     stages {
@@ -144,18 +144,29 @@ pipeline {
             }
         }
 
-        // Optional: stage for pushing images
-        /*
         stage('Push to Registry') {
             steps {
                 script {
-                    docker.withRegistry('', DOCKER_REGO_CREDS) {
-                        // push images logic
+                    echo "Pushing Images to Docker Hub..."
+                    withCredentials([usernamePassword(credentialsId: DOCKER_REGO_CREDS, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
+                        
+                        def services = [
+                            'config-server', 'eureka-server', 'api-gateway', 'user-service', 
+                            'notification-service', 'employee-management-service', 'leave-service', 
+                            'performance-service', 'reporting-service', 'revworkforce-ui'
+                        ]
+                        
+                        for (service in services) {
+                            def localImage = "docker-${service}"
+                            def remoteImage = "${DOCKER_HUB_USER}/revworkforce-${service}:${DOCKER_IMAGE_TAG}"
+                            sh "docker tag ${localImage} ${remoteImage}"
+                            sh "docker push ${remoteImage}"
+                        }
                     }
                 }
             }
         }
-        */
     }
 
     post {

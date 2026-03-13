@@ -97,9 +97,19 @@ pipeline {
                     script {
                         // Assuming sonar-scanner is available in the environment
                         if (isUnix()) {
-                            sh "npx sonar-scanner -Dsonar.projectKey=revworkforce-frontend -Dsonar.sources=src -Dsonar.host.url=http://sonarqube:9000 -Dsonar.token=squ_404cf10b2035070d22d42ef43ae825b1a7542056"
+                            sh "npx sonar-scanner \
+                                -Dsonar.projectKey=revworkforce-frontend \
+                                -Dsonar.sources=src \
+                                -Dsonar.host.url=http://sonarqube:9000 \
+                                -Dsonar.token=squ_404cf10b2035070d22d42ef43ae825b1a7542056 \
+                                -Dsonar.javascript.node.maxspace=4096"
                         } else {
-                            bat "npx sonar-scanner -Dsonar.projectKey=revworkforce-frontend -Dsonar.sources=src -Dsonar.host.url=http://sonarqube:9000 -Dsonar.token=squ_404cf10b2035070d22d42ef43ae825b1a7542056"
+                            bat "npx sonar-scanner \
+                                -Dsonar.projectKey=revworkforce-frontend \
+                                -Dsonar.sources=src \
+                                -Dsonar.host.url=http://sonarqube:9000 \
+                                -Dsonar.token=squ_404cf10b2035070d22d42ef43ae825b1a7542056 \
+                                -Dsonar.javascript.node.maxspace=4096"
                         }
                     }
                 }
